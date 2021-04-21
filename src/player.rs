@@ -109,10 +109,14 @@ pub fn keyboard(gs: &mut State, ctx: &mut Rltk) -> RunState {
 	match ctx.key {
 		None => {return RunState::AwaitingInput} // When nothing happens
 		Some(key) => match key {
-			VirtualKeyCode::Numpad4 => player_move(-1, 0, &mut gs.ecs),	// left
-			VirtualKeyCode::Numpad6 => player_move(1, 0, &mut gs.ecs),	// right
-			VirtualKeyCode::Numpad8 => player_move(0, -1, &mut gs.ecs),	// up
-			VirtualKeyCode::Numpad2 => player_move(0, 1, &mut gs.ecs),	// down 
+			VirtualKeyCode::Numpad4 |
+				VirtualKeyCode::Left => player_move(-1, 0, &mut gs.ecs),	// left
+			VirtualKeyCode::Numpad6 |
+				VirtualKeyCode::Right => player_move(1, 0, &mut gs.ecs),	// right
+			VirtualKeyCode::Numpad8 |
+				VirtualKeyCode::Up => player_move(0, -1, &mut gs.ecs),	// up
+			VirtualKeyCode::Numpad2 |
+				VirtualKeyCode::Down => player_move(0, 1, &mut gs.ecs),	// down 
 			VirtualKeyCode::Numpad9 => player_move(1, -1, &mut gs.ecs),	// up-right
 			VirtualKeyCode::Numpad7 => player_move(-1, -1, &mut gs.ecs),// up-left
 			VirtualKeyCode::Numpad1 => player_move(-1, 1, &mut gs.ecs),	// down-left
