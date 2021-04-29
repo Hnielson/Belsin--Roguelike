@@ -1,6 +1,9 @@
 # Belsin--Roguelike
 Start of roguelike based on the Rust Rltk tutorial
 
+
+COMPILE AND RUN USING => cargo run (once you have rust of course)
+
 Main Menu movement -- up and down arrow keys
 Enter for any menu selection
 
