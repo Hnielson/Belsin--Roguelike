@@ -94,3 +94,17 @@ pub struct WantsToDrinkPotion {
 pub struct WantsToDropItem {
 	pub item : Entity
 }
+
+#[derive(PartialEq, Copy, Clone)]
+pub enum EquipmentSlot { Weapon, Shield }
+
+#[derive(Component, Clone)]
+pub struct Equippable {
+	pub slot : EquipmentSlot
+}
+
+#[derive(Component, Clone)]
+pub struct Equipped {
+	pub owner : Entity,
+	pub slot : EquipmentSlot
+}

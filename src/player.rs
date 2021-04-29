@@ -110,17 +110,25 @@ pub fn keyboard(gs: &mut State, ctx: &mut Rltk) -> RunState {
 		None => {return RunState::AwaitingInput} // When nothing happens
 		Some(key) => match key {
 			VirtualKeyCode::Numpad4 |
-				VirtualKeyCode::Left => player_move(-1, 0, &mut gs.ecs),	// left
+				VirtualKeyCode::Left |
+				VirtualKeyCode::H => player_move(-1, 0, &mut gs.ecs),	// left
 			VirtualKeyCode::Numpad6 |
-				VirtualKeyCode::Right => player_move(1, 0, &mut gs.ecs),	// right
+				VirtualKeyCode::Right |
+				VirtualKeyCode::L => player_move(1, 0, &mut gs.ecs),	// right
 			VirtualKeyCode::Numpad8 |
-				VirtualKeyCode::Up => player_move(0, -1, &mut gs.ecs),	// up
+				VirtualKeyCode::Up |
+				VirtualKeyCode::K => player_move(0, -1, &mut gs.ecs),	// up
 			VirtualKeyCode::Numpad2 |
-				VirtualKeyCode::Down => player_move(0, 1, &mut gs.ecs),	// down 
-			VirtualKeyCode::Numpad9 => player_move(1, -1, &mut gs.ecs),	// up-right
-			VirtualKeyCode::Numpad7 => player_move(-1, -1, &mut gs.ecs),// up-left
-			VirtualKeyCode::Numpad1 => player_move(-1, 1, &mut gs.ecs),	// down-left
-			VirtualKeyCode::Numpad3 => player_move(1, 1, &mut gs.ecs),	// down-right
+				VirtualKeyCode::Down |
+				VirtualKeyCode::J => player_move(0, 1, &mut gs.ecs),	// down 
+			VirtualKeyCode::Numpad9 |
+				VirtualKeyCode::U => player_move(1, -1, &mut gs.ecs),	// up-right
+			VirtualKeyCode::Numpad7 |
+				VirtualKeyCode::Y => player_move(-1, -1, &mut gs.ecs),	// up-left
+			VirtualKeyCode::Numpad1 |
+				VirtualKeyCode::B => player_move(-1, 1, &mut gs.ecs),	// down-left
+			VirtualKeyCode::Numpad3 |
+				VirtualKeyCode::N => player_move(1, 1, &mut gs.ecs),	// down-right
 			VirtualKeyCode::Numpad5 |
 				VirtualKeyCode::Space => return skip_turn(&mut gs.ecs),	// skip turn
 			VirtualKeyCode::G => get_item(&mut gs.ecs),					// pickup item

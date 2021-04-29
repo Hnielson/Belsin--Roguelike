@@ -73,6 +73,7 @@ impl State {
 		let player = self.ecs.read_storage::<Player>();
 		let backpack = self.ecs.read_storage::<InBackpack>();
 		let player_entity = self.ecs.fetch::<Entity>();
+		let equipped = self.ecs.read_storage::<Equipped>();
 
 		let mut to_delete: Vec<Entity> = Vec::new();
 		for entity in entities.join() {
@@ -86,6 +87,12 @@ impl State {
 			let bp = backpack.get(entity);
 			if let Some(bp) = bp {
 				if bp.owner == *player_entity {
+					marked_for_delete = false;
+				}
+			}
+			let eq = equipped.get(entity);
+			if let Some(eq) = eq {
+				if eq.owner == *player_entity {
 					marked_for_delete = false;
 				}
 			}
@@ -108,15 +115,16 @@ impl State {
 
 		// New map generation
 		let new_level;
+		let curr_depth: i32;
 		{
 			let mut map = self.ecs.write_resource::<Map>();
-			let curr_depth = map.depth;
+			curr_depth = map.depth;
 			*map = Map::new_map_rooms_and_corridors(curr_depth + 1);
 			new_level = map.clone();
 		}
 		// Monster Entities
 		for room in new_level.rooms.iter().skip(1) {
-			spawner::spawn_room(&mut self.ecs, room);
+			spawner::spawn_room(&mut self.ecs, room, curr_depth + 1);
 		}
 		// Player position
 		let (p_x, p_y) = new_level.rooms[0].center();
@@ -286,6 +294,8 @@ fn main() -> rltk::BError {
 	gs.ecs.register::<WantsToPickupItem>();
 	gs.ecs.register::<WantsToDrinkPotion>();
 	gs.ecs.register::<WantsToDropItem>();
+	gs.ecs.register::<Equippable>();
+	gs.ecs.register::<Equipped>();
 		
 	// Map making
 	let map : Map = Map::new_map_rooms_and_corridors(1);
@@ -297,14 +307,14 @@ fn main() -> rltk::BError {
 	// resources
 	gs.ecs.insert(rltk::RandomNumberGenerator::new());
 	for room in map.rooms.iter().skip(1) {
-		spawner::spawn_room(&mut gs.ecs, room);
+		spawner::spawn_room(&mut gs.ecs, room, 1);
 	}
 	gs.ecs.insert(map);
 	gs.ecs.insert(Point::new(player_x, player_y));
 	gs.ecs.insert(player_entity);
 	gs.ecs.insert(RunState::Menu{selection: gui::MenuSelection::NewGame});
 	gs.ecs.insert(gamelog::Gamelog{entries : vec!["Welcome to Belsin!".to_string()]});
-	// gs.ecs.insert(InBackpack.insert(potion, owner: player_entity))
+	// gs.ecs.insert(InBackpack::insert(potion, owner: player_entity));
 
     rltk::main_loop(context, gs)
 }

@@ -1,7 +1,7 @@
 use rltk::{RGB, RandomNumberGenerator};
 use specs::prelude::*;
 use super::{CombatStats, Player, Renderable, Name, BlocksTile, Position, Fov,
-    Monster, Rect, map::MAPWIDTH, Item, Potion, SpawnTable};
+    Monster, Rect, map::MAPWIDTH, Item, Potion, SpawnTable, Equippable, EquipmentSlot};
 use std::collections::HashMap;
 
 
@@ -46,14 +46,14 @@ fn monster<S : ToString>(ecs: &mut World, x: i32, y:i32, glyph: rltk::FontCharTy
         .build();
 }
 
-pub fn spawn_room(ecs: &mut World, room: &Rect) {
-    let spawn_table = room_table();
+pub fn spawn_room(ecs: &mut World, room: &Rect, depth: i32) {
+    let spawn_table = room_table(depth);
     let mut spawn_points : HashMap<usize, String> = HashMap::new();
 
     // Scope
     {
         let mut rng = ecs.write_resource::<RandomNumberGenerator>();
-        let num_spawns = rng.roll_dice(1, MAX_MONSTERS + 3) -3;
+        let num_spawns = rng.roll_dice(1, MAX_MONSTERS + 3) + (depth - 1) -3;
 
         for _i in 0..num_spawns {
             let mut added = false;
@@ -81,6 +81,8 @@ pub fn spawn_room(ecs: &mut World, room: &Rect) {
             "Goblin" => goblin(ecs, x, y),
             "Orc" => orc(ecs, x, y),
             "Health Potion" => health_potion(ecs, x, y),
+            "Shield" => shield(ecs, x, y),
+            "Dagger" => dagger(ecs, x, y),
             _ => {}
         }
     }
@@ -102,10 +104,42 @@ fn health_potion(ecs: &mut World, x: i32, y: i32) {
         .build();
 }
 
+fn dagger(ecs: &mut World, x: i32, y: i32) {
+    ecs.create_entity()
+        .with(Position{x,y})
+        .with(Renderable{
+            glyph: rltk::to_cp437('/'),
+            fg: RGB::named(rltk::YELLOW),
+            bg: RGB::named(rltk::BLACK),
+            render_order: 2
+        })
+        .with(Name{name : "Dagger".to_string()})
+        .with(Equippable{slot: EquipmentSlot::Weapon})
+        .with(Item{})
+        .build();
+}
+
+fn shield(ecs: &mut World, x: i32, y: i32) {
+    ecs.create_entity()
+        .with(Position{x,y})
+        .with(Renderable{
+            glyph: rltk::to_cp437(']'),
+            fg: RGB::named(rltk::YELLOW),
+            bg: RGB::named(rltk::BLACK),
+            render_order: 2
+        })
+        .with(Name{name: "Shield".to_string()})
+        .with(Equippable{slot: EquipmentSlot::Shield})
+        .with(Item{})
+        .build();
+}
+
 /// Gives weighted chances for spawns in room
-fn room_table() -> SpawnTable {
+fn room_table(depth: i32) -> SpawnTable {
     SpawnTable::new()
-        .add("Goblin", 10)
-        .add("Orc", 1)
+        .add("Goblin", 11)
+        .add("Orc", 1 + depth)
         .add("Health Potion", 7)
+        .add("Shield", 3)
+        .add("Dagger", 3)
 }
